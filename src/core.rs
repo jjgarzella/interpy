@@ -121,4 +121,10 @@ mod tests {
         assert_eq!(multiply_interp(1,3).num(), Ok(3));
         assert_eq!(multiply_interp(0,1000).num(), Ok(0));
     }
+
+    #[test]
+    fn test_functions() {
+        let fexpr = Apply(box Func("x".to_string(), box Plus(expr(2),box Id("x".to_string()))), expr(2));
+        assert_eq!(interp(fexpr,&Environment::new()).num(), Ok(4));
+    }
 }
