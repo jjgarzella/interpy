@@ -4,6 +4,7 @@
 #![feature(box_syntax, box_patterns)]
 
 mod core;
+mod parse;
 
 fn main() {
     // get input and interp!
