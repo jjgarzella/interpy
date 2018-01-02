@@ -4,7 +4,8 @@
 #![feature(box_syntax, box_patterns)]
 
 mod core;
-mod parse;
+mod tokenizer;
+mod parens;
 
 fn main() {
     // get input and interp!
