@@ -2,8 +2,12 @@
 
 use super::parens::ParenCond;
 
-enum Token<'a> {
-    Symbol(&'a str),
+// For consume_while
+use std::str::Chars;
+use std::iter::Peekable;
+
+enum Token {
+    Symbol(String),
     OpenParen,
     CloseParen,
     EOF,
@@ -19,18 +23,20 @@ impl Tokenizer for String {
         let mut tokens: Vec<Token> = vec![];
         loop {
             match iterator.peek() {
-                Some(&'(') => {
+                Some(&c) if c.is_open_paren() => {
                         tokens.push(Token::OpenParen);
                         iterator.next().unwrap();
                 },
-                Some(&')') => {
+                Some(&c) if c.is_close_paren() => {
                         tokens.push(Token::CloseParen);
                         iterator.next().unwrap();
                 },
                 Some(_) => {
                         let is_valid_id_char = |c: char| { !c.is_whitespace() && !c.is_paren() };
-                        let chars = consume_while(&mut iterator,&is_valid_id_char);
-                        
+                        let ident: String = consume_while(&mut iterator,&is_valid_id_char)
+                            .into_iter()
+                            .collect();
+                        tokens.push(Token::Symbol(ident));
                 },
                 None => {
                     tokens.push(Token::EOF);
@@ -42,9 +48,9 @@ impl Tokenizer for String {
     }
 }
 
-use ::std::iter::{Peekable, Iterator};
-fn consume_while<T: Sized>(it: &Peekable<Iterator<Item=T>>, cond: &Fn(T) -> bool) -> Vec<T> {
-    let mut results: Vec<T> = vec![];
+// could this be made generic? or possibly improved in some other way?
+fn consume_while(it: &mut Peekable<Chars>, cond: &Fn(char) -> bool) -> Vec<char> {
+    let mut results: Vec<char> = vec![];
 
     while let Some(&t) = it.peek() {
         if cond(t) {

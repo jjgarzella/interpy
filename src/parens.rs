@@ -27,21 +27,21 @@ mod test {
     #[test]
     fn test_is_paren() {
         assert!('('.is_paren());
-        assert!('a'.is_paren());
+        assert!(!'a'.is_paren());
         assert!(')'.is_paren());
     }
 
     #[test]
     fn test_is_open_paren() {
         assert!('('.is_open_paren());
-        assert!('a'.is_open_paren());
-        assert!(')'.is_open_paren());
+        assert!(!'a'.is_open_paren());
+        assert!(!')'.is_open_paren());
     }
 
     #[test]
     fn test_is_close_paren() {
-        assert!('('.is_close_paren());
-        assert!('a'.is_close_paren());
+        assert!(!'('.is_close_paren());
+        assert!(!'a'.is_close_paren());
         assert!(')'.is_close_paren());
     }
 }
