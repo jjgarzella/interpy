@@ -50,7 +50,7 @@ impl Value {
 }
 
 #[derive(Clone,Debug)]
-enum Expr {
+pub enum Expr {
     Num(i64),
     Plus(Box<Expr>, Box<Expr>),
     Times(Box<Expr>, Box<Expr>),

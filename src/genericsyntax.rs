@@ -1,7 +1,7 @@
 
 use super::tokenizer::{Token, Tokens};
 
-enum GenericSyntaxTree {
+pub enum GenericSyntaxTree {
     Symbol(String),
     List(Vec<GenericSyntaxTree>),
 }

@@ -3,10 +3,11 @@
 
 #![feature(box_syntax, box_patterns)]
 
-mod expr;
 mod tokenizer;
 mod parens;
 mod genericsyntax;
+mod parse;
+mod expr;
 
 fn main() {
     // get input and interp!
