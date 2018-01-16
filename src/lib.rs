@@ -3,7 +3,7 @@
 
 #![feature(box_syntax, box_patterns)]
 
-mod core;
+mod expr;
 mod tokenizer;
 mod parens;
 mod genericsyntax;

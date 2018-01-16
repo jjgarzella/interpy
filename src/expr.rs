@@ -1,4 +1,4 @@
-// <ExprCore> : 
+// <Expr> : 
 //              num
 //              plus
 //              times
@@ -36,12 +36,12 @@ impl Environment {
 #[derive(Clone,Debug)]
 enum Value {
     Num(i64),
-    Func(Identifier,ExprCore,Environment),
+    Func(Identifier,Expr,Environment),
 }
 
 impl Value {
     pub fn num(&self) -> Result<i64,&str> {
-        use core::Value::*;
+        use expr::Value::*;
         match self {
             &Num(n) => Ok(n),
             &Func(_,_,_) => Err("function"),
@@ -50,13 +50,13 @@ impl Value {
 }
 
 #[derive(Clone,Debug)]
-enum ExprCore {
+enum Expr {
     Num(i64),
-    Plus(Box<ExprCore>, Box<ExprCore>),
-    Times(Box<ExprCore>, Box<ExprCore>),
+    Plus(Box<Expr>, Box<Expr>),
+    Times(Box<Expr>, Box<Expr>),
     Id(Identifier),
-    Func(Identifier, Box<ExprCore>),
-    Apply(Box<ExprCore>, Box<ExprCore>),
+    Func(Identifier, Box<Expr>),
+    Apply(Box<Expr>, Box<Expr>),
 }
 
 fn binary_num_op(op: &Fn(i64, i64) -> i64, left: Value, right: Value) -> Value {
@@ -68,8 +68,8 @@ fn binary_num_op(op: &Fn(i64, i64) -> i64, left: Value, right: Value) -> Value {
 }
 
 
-fn interp(expr: ExprCore, env: &Environment) -> Value {
-    use self::ExprCore::*;
+fn interp(expr: Expr, env: &Environment) -> Value {
+    use self::Expr::*;
     match expr {
         Num(n) => Value::Num(n),
         Plus(box lhs, box rhs) => binary_num_op(&|x,y| {x+y}, interp(lhs,env), interp(rhs,env)),
@@ -88,11 +88,11 @@ fn interp(expr: ExprCore, env: &Environment) -> Value {
 
 #[cfg(test)]
 mod tests {
-    use core::ExprCore::*;
-    use core::interp;
-    use core::Environment;
-    use core::ExprCore; 
-    fn expr(i: i64) -> Box<ExprCore> {
+    use expr::Expr::*;
+    use expr::interp;
+    use expr::Environment;
+    use expr::Expr; 
+    fn expr(i: i64) -> Box<Expr> {
         Box::new(Num(i))
     }
     
