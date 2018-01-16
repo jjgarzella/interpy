@@ -6,6 +6,7 @@
 mod core;
 mod tokenizer;
 mod parens;
+mod genericsyntax;
 
 fn main() {
     // get input and interp!

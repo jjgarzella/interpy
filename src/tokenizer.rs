@@ -6,21 +6,24 @@ use super::parens::ParenCond;
 use std::str::Chars;
 use std::iter::Peekable;
 
-enum Token {
+#[derive(Clone)]
+pub enum Token {
     Symbol(String),
     OpenParen,
     CloseParen,
     EOF,
 }
 
-trait Tokenizer {
-    fn tokenize(&self) -> Vec<Token>;
+pub type Tokens = Vec<Token>;
+
+pub trait Tokenizer {
+    fn tokenize(&self) -> Tokens;
 }
 
 impl Tokenizer for String {
-    fn tokenize(&self) -> Vec<Token> {
+    fn tokenize(&self) -> Tokens {
         let mut iterator = self.chars().peekable();
-        let mut tokens: Vec<Token> = vec![];
+        let mut tokens: Tokens = vec![];
         loop {
             match iterator.peek() {
                 Some(&c) if c.is_open_paren() => {
