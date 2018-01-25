@@ -8,7 +8,7 @@ pub enum GenericSyntaxTree {
 
 impl GenericSyntaxTree {
 
-    fn from_tokens(tokens: &Tokens) -> GenericSyntaxTree {
+    pub fn from_tokens(tokens: &Tokens) -> GenericSyntaxTree {
         let mut syntax: Vec<GenericSyntaxTree> = vec![];
 
         for i in 0..tokens.len() {

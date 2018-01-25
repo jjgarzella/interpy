@@ -8,11 +8,12 @@
 
 use std::collections::HashMap;
 use std::cell::RefCell;
+use std::fmt;
 
 type Identifier = String;
 
 #[derive(Clone,Debug)]
-struct Environment(RefCell<HashMap<Identifier, Value>>);
+pub struct Environment(RefCell<HashMap<Identifier, Value>>);
 
 impl Environment {
     pub fn new() -> Environment {
@@ -34,7 +35,7 @@ impl Environment {
 }
 
 #[derive(Clone,Debug)]
-enum Value {
+pub enum Value {
     Num(i64),
     Func(Identifier,Expr,Environment),
 }
@@ -49,6 +50,16 @@ impl Value {
     }
 }
 
+impl fmt::Display for Value {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        use self::Value::*;
+        match self {
+            &Num(n) => write!(f, "Num({})", n),
+            &Func(ref id, ref expr, ref env) => write!(f, "Func({},{},{:?})", id, expr, env),
+        }
+    }
+}
+
 #[derive(Clone,Debug)]
 pub enum Expr {
     Num(i64),
@@ -59,6 +70,20 @@ pub enum Expr {
     Apply(Box<Expr>, Box<Expr>),
 }
 
+impl fmt::Display for Expr {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        use self::Expr::*;
+        match self {
+            &Num(x) => write!(f, "Num({})", x),
+            &Plus(box ref lhs, box ref rhs) => write!(f, "Plus({},{})", lhs, rhs),
+            &Times(box ref lhs, box ref rhs) => write!(f, "Times({},{})", lhs, rhs),
+            &Id(ref id) => write!(f, "Id({})", id),
+            &Func(ref param, box ref body) => write!(f, "Func({},{})", param, body),
+            &Apply(box ref func, box ref arg) => write!(f, "Apply({}, {})", func, arg),
+        }
+    }
+}
+
 fn binary_num_op(op: &Fn(i64, i64) -> i64, left: Value, right: Value) -> Value {
     use self::Value::Num;
     match (left, right) {
@@ -67,8 +92,7 @@ fn binary_num_op(op: &Fn(i64, i64) -> i64, left: Value, right: Value) -> Value {
     }
 }
 
-
-fn interp(expr: Expr, env: &Environment) -> Value {
+pub fn interp(expr: Expr, env: &Environment) -> Value {
     use self::Expr::*;
     match expr {
         Num(n) => Value::Num(n),

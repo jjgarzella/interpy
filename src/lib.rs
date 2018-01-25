@@ -9,7 +9,29 @@ mod genericsyntax;
 mod parse;
 mod expr;
 
-fn main() {
+pub fn main() {
     // get input and interp!
-    println!("Under Construction");
+    use std::io::{self, BufRead};
+    loop {
+        print!("interpy>> ");
+        let mut input = String::new();
+        let stdin = io::stdin();
+        stdin.lock().read_line(&mut input).expect("Could not read from standard input");
+        println!("{}", interp(input))
+    }
+}
+
+
+
+pub fn interp(code: String) -> expr::Value {
+  use tokenizer::Tokenizer;
+  println!("Tokenizing...");
+  let tokens = code.tokenize();
+  println!("Generating Syntax...");
+  let generic_syntax = genericsyntax::GenericSyntaxTree::from_tokens(&tokens);
+  println!("Parsing...");
+  let expr = parse::parse_lambda(&generic_syntax);
+  println!("Interpreting...");
+  let val = expr::interp(expr, &expr::Environment::new());
+  val
 }

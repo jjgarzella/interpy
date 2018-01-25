@@ -4,25 +4,25 @@ use super::expr::Expr;
 
 
 
-fn parse_lambda(tree: GenericSyntaxTree) -> Expr {
+pub fn parse_lambda(tree: &GenericSyntaxTree) -> Expr {
     use self::GenericSyntaxTree::*;
-    match tree {
+    match *tree {
         Symbol(ref s) if s.parse::<isize>().is_ok() => Expr::Num(s.parse().unwrap()),
         Symbol(ref s) => Expr::Id(s.clone()),
-        List(syntax) 
+        List(ref syntax) 
             if syntax.len() == 1 => panic!("unknown length 1 operator"),
-        List(syntax) 
-            if syntax.len() == 2 => Expr::Apply(box parse_lambda(syntax[0]), 
-                                                   box parse_lambda(syntax[1])),
-        List(syntax)
+        List(ref syntax) 
+            if syntax.len() == 2 => Expr::Apply(box parse_lambda(&syntax[0]), 
+                                                   box parse_lambda(&syntax[1])),
+        List(ref syntax)
             if syntax.len() == 3 => match syntax[0] {
-                Symbol(ref p) if p == "+" => Expr::Plus(box parse_lambda(syntax[1]), 
-                                                      box parse_lambda(syntax[2])),
-                Symbol(ref t) if t == "*" => Expr::Times(box parse_lambda(syntax[1]), 
-                                                       box parse_lambda(syntax[2])),
+                Symbol(ref p) if p == "+" => Expr::Plus(box parse_lambda(&syntax[1]), 
+                                                      box parse_lambda(&syntax[2])),
+                Symbol(ref t) if t == "*" => Expr::Times(box parse_lambda(&syntax[1]), 
+                                                       box parse_lambda(&syntax[2])),
                 Symbol(ref l) if l == "lambda" => match syntax[1] {
-                    List(vec) if vec.len() == 1 => match vec[1] {
-                        Symbol(ref s) => Expr::Func(s.clone(), box parse_lambda(syntax[2])),
+                    List(ref vec) if vec.len() == 1 => match vec[1] {
+                        Symbol(ref s) => Expr::Func(s.clone(), box parse_lambda(&syntax[2])),
                         _ => panic!("unsupported inside of second part of function"),
                     },
                     _ => panic!("unsupported second part of function"),

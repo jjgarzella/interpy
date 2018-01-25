@@ -25,6 +25,7 @@ impl Tokenizer for String {
         let mut iterator = self.chars().peekable();
         let mut tokens: Tokens = vec![];
         loop {
+            //debug!("Next token: {:?}", iterator.peek());
             match iterator.peek() {
                 Some(&c) if c.is_open_paren() => {
                         tokens.push(Token::OpenParen);
@@ -34,6 +35,9 @@ impl Tokenizer for String {
                         tokens.push(Token::CloseParen);
                         iterator.next().unwrap();
                 },
+                Some(&c) if c.is_whitespace() => {
+                    iterator.next().unwrap();
+                }
                 Some(_) => {
                         let is_valid_id_char = |c: char| { !c.is_whitespace() && !c.is_paren() };
                         let ident: String = consume_while(&mut iterator,&is_valid_id_char)
