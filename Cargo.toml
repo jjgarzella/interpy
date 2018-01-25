@@ -3,3 +3,11 @@
 name = "interpy"
 version = "0.0.1"
 authors = ["JJ Garzella <jjgarzella@gmail.com>"]
+
+[lib]
+name = "interpy"
+path = "src/lib.rs"
+
+[[bin]]
+name = "runinterpy"
+path = "src/bin.rs"
