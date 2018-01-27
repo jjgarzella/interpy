@@ -1,17 +1,30 @@
 // Much of this code was inspired by http://keepcalmandlearnrust.com/2016/08/iterator-and-peekable/
 
 use super::parens::ParenCond;
+use std::fmt;
 
 // For consume_while
 use std::str::Chars;
 use std::iter::Peekable;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum Token {
     Symbol(String),
     OpenParen,
     CloseParen,
     EOF,
+}
+
+impl fmt::Display for Token {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        use self::Token::*;
+        match self {
+            &Symbol(ref id) => write!(f, "Sym({})", id),
+            &OpenParen => write!(f, "("),
+            &CloseParen => write!(f, ")"),
+            &EOF => write!(f, "EOF"),
+        }
+    }
 }
 
 pub type Tokens = Vec<Token>;

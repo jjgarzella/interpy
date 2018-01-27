@@ -25,7 +25,7 @@ impl Environment {
     fn lookup(&self, id: Identifier) -> Value {
         match self.0.borrow().get(&id) {
             Some(val) => val.clone(),
-            None => panic!("Free variable!"),
+            None => panic!("Free variable {}", id),
         }
     }
 
