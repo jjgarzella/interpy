@@ -1,6 +1,6 @@
 
 extern crate interpy;
-use std::io::{self, BufRead};
+use std::io;
 use std::io::prelude::*;
 
 fn main() {

@@ -66,9 +66,9 @@ mod tests {
     fn test_more_digits() {
         test_string_interp("45", 45);
         test_string_interp("(+ 3 12)", 15);
-        test_string_interp("(+ 3 -12", -9);
+        test_string_interp("(+ 3 -12)", -9);
         test_string_interp("(* 4 10)", 40);
-        test_string_interp("(* 4 -10", -40);
+        test_string_interp("(* 4 -10)", -40);
     }
 
     #[test]

@@ -9,21 +9,30 @@ pub enum GenericSyntaxTree {
 
 impl GenericSyntaxTree {
 
-    pub fn from_tokens(tokens: &Tokens) -> GenericSyntaxTree {
+    fn from_tokens_helper(tokens: &Tokens, index: usize) -> (GenericSyntaxTree, usize) {
         let mut syntax: Vec<GenericSyntaxTree> = vec![];
 
-        for i in 0..tokens.len() {
+        let mut i = index;
+        while i < tokens.len() {
             match &tokens[i] {
                 &Token::Symbol(ref s) => syntax.push(GenericSyntaxTree::Symbol(s.clone())),
                 &Token::OpenParen => {
-                    syntax.push(GenericSyntaxTree::from_tokens(&tokens[i+1..tokens.len()].to_vec()));
-                    return GenericSyntaxTree::List(syntax);
+                    let (tree, new_ind) = GenericSyntaxTree::from_tokens_helper(tokens, i+1);
+                    syntax.push(tree);
+                    i = new_ind;
+                    continue;
                 },
-                &Token::CloseParen => return GenericSyntaxTree::List(syntax),
-                &Token::EOF => return GenericSyntaxTree::List(syntax), // add in error?
+                &Token::CloseParen => return (GenericSyntaxTree::List(syntax), i+1),
+                &Token::EOF => return (GenericSyntaxTree::List(syntax), i+1), // add in error?
             }
+            i += 1
         }
+
         panic!("should be unreachable - no EOF token or close paren found");
+    }
+
+    pub fn from_tokens(tokens: &Tokens) -> GenericSyntaxTree {
+        GenericSyntaxTree::from_tokens_helper(tokens, 0).0
     }
 }
 
