@@ -11,7 +11,7 @@ fn main() {
         let stdin = io::stdin();
         stdin.read_line(&mut input).ok().expect("Could not read from standard input");
         println!("Input: {}", input);
-        let val = interpy::interp(input);
+        let val = interpy::interpret(input);
         println!("Answer: {}", val.to_string()); 
         io::stdout().flush().unwrap();
     }

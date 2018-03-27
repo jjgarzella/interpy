@@ -1,6 +1,11 @@
 
 use super::genericsyntax::GenericSyntaxTree;
 use super::genericsyntax::GenericSyntaxTree::*;
+
+#[cfg(feature = "lazy")]
+use super::expr_lazy::Expr;
+
+#[cfg(not(feature = "lazy"))]
 use super::expr::Expr;
 
 
@@ -21,7 +26,7 @@ pub fn parse(tree: &GenericSyntaxTree) -> Expr {
                 Symbol(ref t) if t == "*" => Expr::Times(box parse(&syntax[1]), 
                                                        box parse(&syntax[2])),
                 Symbol(ref l) if l == "lambda" => match syntax[1] {
-                    List(ref vec) if vec.len() == 1 => match vec[1] {
+                    List(ref arg) if arg.len() == 1 => match arg[0] {
                         Symbol(ref s) => Expr::Func(s.clone(), box parse(&syntax[2])),
                         _ => panic!("unsupported inside of second part of function"),
                     },

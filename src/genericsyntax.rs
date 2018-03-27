@@ -42,9 +42,9 @@ impl fmt::Display for GenericSyntaxTree {
         match self {
             &Symbol(ref id) => write!(f, "\"{}\"", id),
             &List(ref child_trees) => {
-                write!(f, "( ");
+                try!(write!(f, "( "));
                 for tree in child_trees {
-                    write!(f, "{} ", tree);
+                    try!(write!(f, "{} ", tree));
                 }
                 write!(f, ")")
             }

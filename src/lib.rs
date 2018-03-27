@@ -7,9 +7,20 @@ mod tokenizer;
 mod parens;
 mod genericsyntax;
 mod parse;
+
+#[cfg(feature = "lazy")]
+mod expr_lazy;
+
+#[cfg(feature = "lazy")]
+use expr_lazy::*;
+
+#[cfg(not(feature = "lazy"))]
 mod expr;
 
-pub fn interp(code: String) -> expr::Value {
+#[cfg(not(feature = "lazy"))]
+use expr::*;
+
+pub fn interpret(code: String) -> Value {
   use tokenizer::Tokenizer;
   println!("Tokenizing...");
   let tokens = code.tokenize();
@@ -20,21 +31,21 @@ pub fn interp(code: String) -> expr::Value {
   println!("Parsing...");
   let exprs = parse::parse_statements(&generic_syntax);
   println!("Interpreting...");
-  let mut vals: Vec<expr::Value> = vec![];
+  let mut vals: Vec<Value> = vec![];
   for expr in exprs {
     println!("{}", expr);
-    vals.push(expr::interp(expr, &expr::Environment::new()));
+    vals.push(interp(expr, &Environment::new()));
   }
   vals.pop().unwrap()
 }
 
 #[cfg(test)]
 mod tests {
-    use super::interp;
+    use super::interpret;
     
     fn test_string_interp(code: &str, result: i64) {
 
-        assert_eq!(interp(code.to_string()).num(), Ok(result));
+        assert_eq!(interpret(code.to_string()).num(), Ok(result));
     }
 
     #[test]
@@ -77,9 +88,9 @@ mod tests {
         test_string_interp("((lambda (y) (+ y 3)) (+ 3 4))", 10);
     }
     
-    //#[test]
+    #[test]
     fn test_complex_func() {
-        test_string_interp("(lambda (x) 3) (lambda (y) y))", 3);
+        test_string_interp("((lambda (x) 3) (lambda (y) y))", 3);
         test_string_interp("(((lambda (x) (lambda (y) (* x y))) 6) 7)", 42);
         test_string_interp("((lambda (x) (x 3)) (lambda (z) (+ z 2)))", 5);
     }

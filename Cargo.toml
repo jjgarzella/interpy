@@ -11,3 +11,9 @@ path = "src/lib.rs"
 [[bin]]
 name = "runinterpy"
 path = "src/bin.rs"
+
+[features]
+
+default = []
+
+lazy = []
