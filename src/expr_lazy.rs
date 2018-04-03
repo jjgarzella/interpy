@@ -9,6 +9,7 @@
 use std::collections::HashMap;
 use std::cell::RefCell;
 use std::fmt;
+use std::ops::Deref;
 
 type Identifier = String;
 
@@ -16,19 +17,17 @@ type Identifier = String;
 struct Thunk {
     body: Expr,
     env: Environment,
-    doneVal: RefCell<Option<Value>>,
+    done_val: RefCell<Option<Value>>,
 }
 
 impl Thunk {
     fn force(&self) -> Value {
-        match self.doneVal.borrow_mut() {
-            &Some(v) => v,
-            &pointer  => {
-                let v = interp(self.body,&self.env);
-                *pointer = Some(v);
-                v
-            },
+        if let &Some(ref v) = self.done_val.borrow().deref() {
+            return (*v).clone()
         }
+        let v = interp(self.body.clone(),&self.env);
+        self.done_val.replace(Some(v.clone()));
+        v
     }
 }
 
@@ -122,7 +121,11 @@ pub fn interp(expr: Expr, env: &Environment) -> Value {
         Func(param,box body) => Value::Func(param,body,env.clone()),
         Apply(box func, box arg) => match interp(func,env) {
             Value::Func(id,body,env) => {
-                env.extend(id,Thunk {body,env: env.clone(), doneVal: Box::new(None) } );
+                env.extend(id,Thunk {
+                    body: arg.clone(),
+                    env: env.clone(), 
+                    done_val: RefCell::new(None) 
+                });
                 interp(body,&env)
             }
             _ => panic!("Not a function"),
@@ -170,5 +173,14 @@ mod tests {
     fn test_functions() {
         let fexpr = Apply(box Func("x".to_string(), box Plus(expr(2),box Id("x".to_string()))), expr(2));
         assert_eq!(interp(fexpr,&Environment::new()).num(), Ok(4));
+    }
+    
+    #[test]
+    fn test_lazy() {
+        let bad_eval = Apply(expr(1),expr(2));
+        let constant_function = Func("x".to_string(), expr(5));
+        let good_lazy_program = Apply(box constant_function, box bad_eval);
+
+        assert_eq!(interp(good_lazy_program,&Environment::new()).num(),Ok(5));
     }
 }
